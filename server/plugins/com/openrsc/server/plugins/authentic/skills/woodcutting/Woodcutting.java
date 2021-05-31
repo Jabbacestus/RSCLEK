@@ -1,0 +1,164 @@
+package com.openrsc.server.plugins.authentic.skills.woodcutting;
+
+import com.openrsc.server.constants.ItemId;
+import com.openrsc.server.constants.Skill;
+import com.openrsc.server.external.ObjectWoodcuttingDef;
+import com.openrsc.server.model.container.Item;
+import com.openrsc.server.model.entity.GameObject;
+import com.openrsc.server.model.entity.player.Player;
+import com.openrsc.server.plugins.triggers.OpLocTrigger;
+import com.openrsc.server.util.rsc.DataConversions;
+import com.openrsc.server.util.rsc.Formulae;
+import com.openrsc.server.util.rsc.MessageType;
+
+import java.util.Optional;
+
+import static com.openrsc.server.plugins.Functions.*;
+
+public class Woodcutting implements OpLocTrigger {
+
+	@Override
+	public boolean blockOpLoc(final Player player, final GameObject obj,
+							  final String command) {
+		final ObjectWoodcuttingDef def = player.getWorld().getServer().getEntityHandler().getObjectWoodcuttingDef(obj.getID());
+		return (command.equals("chop") && def != null && obj.getID() != 245 && obj.getID() != 204);
+	}
+
+	private void handleWoodcutting(final GameObject object, final Player player,
+								   final int click) {
+		final ObjectWoodcuttingDef def = player.getWorld().getServer().getEntityHandler().getObjectWoodcuttingDef(object.getID());
+		/*if (player.isBusy()) {
+			return;
+		}*/
+		if (!player.withinRange(object, 2)) {
+			return;
+		}
+		if (def == null) { // This shouldn't happen
+			player.message("Nothing interesting happens");
+			return;
+		}
+		if (def.getReqLevel() > 1 && !config().MEMBER_WORLD) {
+			player.message(player.MEMBER_MESSAGE);
+			return;
+		}
+		if (config().WANT_FATIGUE) {
+			if (config().STOP_SKILLING_FATIGUED >= 1
+				&& player.getFatigue() >= player.MAX_FATIGUE) {
+				player.playerServerMessage(MessageType.QUEST, "You are too tired to cut the tree");
+				return;
+			}
+		}
+		if (player.getSkills().getLevel(Skill.WOODCUTTING.id()) < def.getReqLevel()) {
+			player.message("You need a woodcutting level of " + def.getReqLevel() + " to axe this tree");
+			return;
+		}
+
+		// determine axe, highest tier axes are authentically searched for first
+		int axeId = -1;
+		for (final int a : Formulae.woodcuttingAxeIDs) {
+			if (player.getCarriedItems().hasCatalogID(a, Optional.of(false))) {
+				axeId = a;
+				break;
+			}
+		}
+		if (axeId < 0) {
+			player.playerServerMessage(MessageType.QUEST, "You need an axe to chop this tree down");
+			return;
+		}
+
+		int repeat = 1;
+		if (config().BATCH_PROGRESSION) {
+			repeat = Formulae.getRepeatTimes(player, Skill.WOODCUTTING.id());
+		}
+
+		startbatch(repeat);
+		batchWoodcutting(player, object, def, axeId);
+	}
+
+	private void batchWoodcutting(Player player, GameObject object, ObjectWoodcuttingDef def, int axeId) {
+		player.playerServerMessage(MessageType.QUEST, "You swing your " + player.getWorld().getServer().getEntityHandler().getItemDef(axeId).getName().toLowerCase() + " at the tree...");
+		thinkbubble(new Item(axeId));
+		delay(3);
+
+		final Item log = new Item(def.getLogId());
+		if (config().WANT_FATIGUE) {
+			if (config().STOP_SKILLING_FATIGUED >= 1
+				&& player.getFatigue() >= player.MAX_FATIGUE) {
+				player.playerServerMessage(MessageType.QUEST, "You are too tired to cut the tree");
+				return;
+			}
+		}
+		if (player.getSkills().getLevel(Skill.WOODCUTTING.id()) < def.getReqLevel()) {
+			player.message("You need a woodcutting level of " + def.getReqLevel() + " to axe this tree");
+			return;
+		}
+
+		if (getLog(def, player.getSkills().getLevel(Skill.WOODCUTTING.id()), axeId)) {
+			//check if the tree is still up
+			player.getCarriedItems().getInventory().add(log);
+			player.playerServerMessage(MessageType.QUEST, "You get some wood");
+			if (player.getConfig().SCALED_WOODCUT_XP && def.getLogId() == ItemId.LOGS.id()) {
+				player.incExp(Skill.WOODCUTTING.id(), getExpRetro(player.getSkills().getMaxStat(Skill.WOODCUTTING.id()), 25), true);
+			} else {
+				player.incExp(Skill.WOODCUTTING.id(), def.getExp(), true);
+			}
+			if (DataConversions.random(1, 100) <= def.getFell()) {
+				GameObject obj = player.getViewArea().getGameObject(object.getID(), object.getX(), object.getY());
+				int stumpId;
+				if (def.getLogId() == ItemId.LOGS.id() || def.getLogId() == ItemId.MAGIC_LOGS.id()) {
+					stumpId = 4; //narrow tree stump
+				} else {
+					stumpId = 314; //wide tree stump
+				}
+				if (obj != null && obj.getID() == object.getID() && def.getRespawnTime() > 0) {
+					GameObject newObject = new GameObject(player.getWorld(), object.getLocation(), stumpId, object.getDirection(), object.getType());
+					player.getWorld().replaceGameObject(object, newObject);
+					player.getWorld().delayedSpawnObject(obj.getLoc(), def.getRespawnTime() * 1000);
+				}
+				return;
+			}
+		} else {
+			player.playerServerMessage(MessageType.QUEST, "You slip and fail to hit the tree");
+			if (!isbatchcomplete()) {
+				GameObject checkObj = player.getViewArea().getGameObject(object.getID(), object.getX(), object.getY());
+				if (checkObj == null) {
+					return;
+				}
+			}
+		}
+
+		// If tree has felled, stop the batch.
+		GameObject obj = player.getViewArea().getGameObject(object.getID(), object.getX(), object.getY());
+		if (obj == null) {
+			stopbatch();
+			return;
+		}
+
+		// Repeat
+		updatebatch();
+		if (!ifinterrupted() && !isbatchcomplete()) {
+			delay();
+			batchWoodcutting(player, object, def, axeId);
+		}
+	}
+
+	@Override
+	public void onOpLoc(final Player player, final GameObject object, final String command) {
+		final ObjectWoodcuttingDef def = player.getWorld().getServer().getEntityHandler().getObjectWoodcuttingDef(object.getID());
+		if (command.equals("chop") && def != null && object.getID() != 245 && object.getID() != 204) {
+			handleWoodcutting(object, player, player.click);
+		}
+	}
+
+	/**
+	 * Should we get a log from the tree?
+	 */
+	public boolean getLog(ObjectWoodcuttingDef def, int woodcutLevel, int axeId) {
+		double roll = Math.random();
+		return def.getRate(woodcutLevel, axeId) > roll;
+	}
+
+	public static int getExpRetro(int level, int baseExp) {
+		return (int) ((baseExp + (level * 1.75)) * 4);
+	}
+}
