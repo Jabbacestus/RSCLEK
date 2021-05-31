@@ -1,4 +1,4 @@
-package launcher.Gameupdater;
+package main.java.launcher.Gameupdater;
 
 import java.io.*;
 import java.net.URL;
@@ -8,11 +8,11 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import launcher.Gameupdater.UpdaterGui.MainUpdaterGui;
-import launcher.Utils.ClientLauncher;
-import launcher.Utils.Defaults;
+import main.java.launcher.Gameupdater.UpdaterGui.MainUpdaterGui;
+import main.java.launcher.Utils.ClientLauncher;
+import main.java.launcher.Utils.Defaults;
 
-import static launcher.Launcher.fetchLatestExtrasVersionNumber;
+import static main.java.launcher.Launcher.fetchLatestExtrasVersionNumber;
 
 public class Updater {
 	private static String _CACHE_DIR = null;

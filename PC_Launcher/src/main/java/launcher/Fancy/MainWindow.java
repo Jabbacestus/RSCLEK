@@ -1,10 +1,10 @@
-package launcher.Fancy;
+package main.java.launcher.Fancy;
 
-import launcher.Settings;
-import launcher.Utils.Defaults;
-import launcher.Utils.Utils;
-import launcher.elements.*;
-import launcher.listeners.PositionListener;
+import main.java.launcher.Settings;
+import main.java.launcher.Utils.Defaults;
+import main.java.launcher.Utils.Utils;
+import main.java.launcher.elements.*;
+import main.java.launcher.listeners.PositionListener;
 
 import javax.swing.*;
 import java.awt.*;

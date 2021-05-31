@@ -1,6 +1,6 @@
-package launcher.listeners;
+package main.java.launcher.listeners;
 
-import launcher.Fancy.MainWindow;
+import main.java.launcher.Fancy.MainWindow;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

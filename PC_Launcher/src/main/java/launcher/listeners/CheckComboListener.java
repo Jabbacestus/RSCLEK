@@ -1,10 +1,10 @@
-package launcher.listeners;
+package main.java.launcher.listeners;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import launcher.elements.CheckCombo;
+import main.java.launcher.elements.CheckCombo;
 
 public class CheckComboListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {

@@ -1,7 +1,7 @@
-package launcher;
+package main.java.launcher;
 
-import launcher.Utils.Defaults;
-import launcher.Utils.Utils;
+import main.java.launcher.Utils.Defaults;
+import main.java.launcher.Utils.Utils;
 
 public class Main {
 

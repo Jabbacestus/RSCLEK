@@ -1,9 +1,9 @@
-package launcher.elements;
+package main.java.launcher.elements;
 
-import launcher.Settings;
-import launcher.Fancy.MainWindow;
-import launcher.listeners.ButtonListener;
-import launcher.Utils.*;
+import main.java.launcher.Settings;
+import main.java.launcher.Fancy.MainWindow;
+import main.java.launcher.listeners.ButtonListener;
+import main.java.launcher.Utils.*;
 
 import javax.swing.*;
 import java.awt.*;

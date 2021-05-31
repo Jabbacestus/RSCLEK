@@ -1,7 +1,7 @@
-package launcher.Gameupdater.UpdaterGui;
+package main.java.launcher.Gameupdater.UpdaterGui;
 
-import launcher.Utils.Defaults;
-import launcher.Utils.Utils;
+import main.java.launcher.Utils.Defaults;
+import main.java.launcher.Utils.Utils;
 
 import javax.swing.*;
 import java.awt.*;

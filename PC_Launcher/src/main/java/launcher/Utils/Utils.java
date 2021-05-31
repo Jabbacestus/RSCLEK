@@ -1,4 +1,4 @@
-package launcher.Utils;
+package main.java.launcher.Utils;
 
 import javax.swing.*;
 import java.awt.*;

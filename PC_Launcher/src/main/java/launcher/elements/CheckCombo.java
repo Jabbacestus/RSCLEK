@@ -1,7 +1,7 @@
-package launcher.elements;
+package main.java.launcher.elements;
 
-import launcher.Utils.Defaults;
-import launcher.listeners.CheckComboListener;
+import main.java.launcher.Utils.Defaults;
+import main.java.launcher.listeners.CheckComboListener;
 
 import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;

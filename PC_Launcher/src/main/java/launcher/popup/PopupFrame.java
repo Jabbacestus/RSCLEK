@@ -1,8 +1,8 @@
-package launcher.popup;
+package main.java.launcher.popup;
 
-import launcher.Fancy.MainWindow;
-import launcher.elements.ControlButton;
-import launcher.Utils.Utils;
+import main.java.launcher.Fancy.MainWindow;
+import main.java.launcher.elements.ControlButton;
+import main.java.launcher.Utils.Utils;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

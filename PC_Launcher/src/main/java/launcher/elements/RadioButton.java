@@ -1,6 +1,6 @@
-package launcher.elements;
+package main.java.launcher.elements;
 
-import launcher.listeners.ButtonListener;
+import main.java.launcher.listeners.ButtonListener;
 
 import javax.swing.*;
 import java.awt.*;

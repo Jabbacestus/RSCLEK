@@ -1,8 +1,8 @@
-package launcher;
+package main.java.launcher;
 
-import launcher.Fancy.MainWindow;
-import launcher.Gameupdater.Updater;
-import launcher.Utils.Defaults;
+import main.java.launcher.Fancy.MainWindow;
+import main.java.launcher.Gameupdater.Updater;
+import main.java.launcher.Utils.Defaults;
 
 import javax.swing.*;
 import java.awt.*;

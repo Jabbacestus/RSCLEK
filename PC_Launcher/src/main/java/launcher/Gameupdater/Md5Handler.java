@@ -1,6 +1,6 @@
-package launcher.Gameupdater;
+package main.java.launcher.Gameupdater;
 
-import launcher.Utils.Defaults;
+import main.java.launcher.Utils.Defaults;
 
 import java.io.File;
 import java.io.FileInputStream;
